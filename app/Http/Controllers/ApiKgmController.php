@@ -8,7 +8,7 @@ use Illuminate\Support\Facades\Response;
 class ApiKgmController extends Controller
 {
 
-//    https://api.dev.bg/php/public/kgm/search?seria=А&number=33
+//    https://vasil.iag.bg/kgm/search?seria=А&number=33
     public function search(Request $request)
     {
         $names = Kgm::join('u_names','u_names.ID','=','u_kgm.NamesID')
@@ -29,15 +29,17 @@ class ApiKgmController extends Controller
             ], 200);
         }
 
-        return Response::json([
-            'records'        => $this->transformCollection_names($names),
-            'records_count'  => $names->count(),
-            'status_message' => 'Извличането на данни завърши успешно',
-            'status_code'    => 200
-        ], 200);
+        return response()
+                        ->json([
+                            'records'        => $this->transformCollection_names($names),
+                            'records_count'  => $names->count(),
+                            'status_message' => 'Извличането на данни завърши успешно',
+                            'status_code'    => 200
+                            ])
+                        ->setCallback($request->input('callback'));
     }
 
-    // https://api.dev.bg/php/public/kgm/get?names_id=12346
+    // https://vasil.iag.bg/kgm/get?names_id=12346
     public function get(Request $request)
     {
         $names = Kgm::join('u_names','u_names.ID','=','u_kgm.NamesID')
@@ -54,10 +56,12 @@ class ApiKgmController extends Controller
 
         if( ! $kgms || ! $names)
         {
-            return Response::json([
-                'status_message'=>'Няма такова лице',
-                'status_code'   => 404
-            ], 200);
+            return response()
+                            ->json([
+                                    'status_message'=>'Няма такова лице',
+                                    'status_code'   => 404
+                                ], 200)
+                            ->setCallback($request->input('callback'));;
         }
 
         return Response::json([
@@ -92,21 +96,21 @@ class ApiKgmController extends Controller
     private function transform($kgms)
     {
         return [
-//            'kgm_id'                 => $kgms['ID'],
-//            'udo_kgm_id'             => $kgms['UdoKgmID'],
-//            'names_id'               => $kgms['NamesID'],
-//            'ime'                    => $kgms['Ime'],
-//            'prezime'                => $kgms['Prezime'],
-//            'familia'                => $kgms['Familia'],
+            'kgm_id'                 => $kgms['ID'],
+            'udo_kgm_id'             => $kgms['UdoKgmID'],
+            'names_id'               => $kgms['NamesID'],
+            'ime'                    => $kgms['Ime'],
+            'prezime'                => $kgms['Prezime'],
+            'familia'                => $kgms['Familia'],
             'seria'                  => $kgms['SeriaKGM'],
             'number'                 => $kgms['strNumberKGM'],
-//            'grad'                   => $kgms['PolpulatedPlace'],
-//            'obshtina'               => $kgms['Municipality'],
-//            'oblast'                 => $kgms['Region'],
-//            'email'                  => $kgms['Email'],
-//            'phone'                  => $kgms['Phone'],
-//            'egn'                    => $kgms['EGN_EIK'],
-//            'address'                => $kgms['AddressP'],
+            'grad'                   => $kgms['PolpulatedPlace'],
+            'obshtina'               => $kgms['Municipality'],
+            'oblast'                 => $kgms['Region'],
+            'email'                  => $kgms['Email'],
+            'phone'                  => $kgms['Phone'],
+            'egn'                    => $kgms['EGN_EIK'],
+            'address'                => $kgms['AddressP'],
             'type'                   => $kgms['TypeKGM'],
             'number_zap_otpisvane'   => $kgms['NumberZapovedOtpisvane'],
             'date_zapoved_otpisvane' => $kgms['DateZapovedOtpisvane'],
@@ -117,25 +121,25 @@ class ApiKgmController extends Controller
     private function transform_names($names)
     {
         return [
-//            'kgm_id'                 => $names['ID'],
-//            'udo_kgm_id'             => $names['UdoKgmID'],
+            'kgm_id'                 => $names['ID'],
+            'udo_kgm_id'             => $names['UdoKgmID'],
             'names_id'               => $names['NamesID'],
             'ime'                    => $names['Ime'],
             'prezime'                => $names['Prezime'],
             'familia'                => $names['Familia'],
-//            'seria'                  => $names['SeriaKGM'],
-//            'number'                 => $names['strNumberKGM'],
+            'seria'                  => $names['SeriaKGM'],
+            'number'                 => $names['strNumberKGM'],
             'grad'                   => $names['PolpulatedPlace'],
-//            'obshtina'               => $names['Municipality'],
-//            'oblast'                 => $names['Region'],
-//            'email'                  => $names['Email'],
-//            'phone'                  => $names['Phone'],
-//            'egn'                    => $names['EGN_EIK'],
-//            'address'                => $names['AddressP'],
-//            'type'                   => $names['TypeKGM'],
-//            'number_zap_otpisvane'   => $names['NumberZapovedOtpisvane'],
-//            'date_zapoved_otpisvane' => $names['DateZapovedOtpisvane'],
-//            'active'                 => (boolean) $names['Active'],
+            'obshtina'               => $names['Municipality'],
+            'oblast'                 => $names['Region'],
+            'email'                  => $names['Email'],
+            'phone'                  => $names['Phone'],
+            'egn'                    => $names['EGN_EIK'],
+            'address'                => $names['AddressP'],
+            'type'                   => $names['TypeKGM'],
+            'number_zap_otpisvane'   => $names['NumberZapovedOtpisvane'],
+            'date_zapoved_otpisvane' => $names['DateZapovedOtpisvane'],
+            'active'                 => (boolean) $names['Active'],
         ];
     }
 }
